@@ -18,6 +18,13 @@ class WhatIsWorldModelScene(VoiceoverScene):
         with self.voiceover(text=text) as tracker:
             self.wait(tracker.duration + hold)
 
+    def say_and_play(self, text: str, *animations, hold: float = 0.15):
+        """Phát voice và chạy animation cùng lúc."""
+        with self.voiceover(text=text) as tracker:
+            if animations:
+                self.play(*animations, run_time=tracker.duration)
+            self.wait(hold)
+
     def play(self, *args, **kwargs):
         if "run_time" in kwargs:
             kwargs["run_time"] /= self.ANIMATION_SPEED
@@ -37,81 +44,59 @@ class WhatIsWorldModelScene(VoiceoverScene):
             create_subcaption=False,
         )
 
-        self.show_intro_image()
-        self.say(
+        self.show_intro_image(
             "Trong đoạn này, chúng ta sẽ nhìn World Model theo một góc rất đơn giản: "
-            "nó là cách để AI học về thế giới, thay vì chỉ học thuộc dữ liệu.",
-            0.2,
-        )
-        self.say(
+            "nó là cách để AI học về thế giới, thay vì chỉ học thuộc dữ liệu. "
             "Nói cách khác, AI không chỉ trả lời câu hỏi hay tạo nội dung. "
             "Nó còn có thể tưởng tượng ra một không gian giả lập, nơi ta thử ý tưởng "
-            "trước khi đem ra thế giới thật.",
-            0.2,
+            "trước khi đem ra thế giới thật."
         )
         self.clear_scene()
 
-        self.show_paper_context()
-        self.say(
+        self.show_paper_context(
             "Nếu nhìn vào những tín hiệu gần đây, ta thấy World Model đang được quan tâm "
             "mạnh trở lại. Không chỉ vì nghiên cứu, mà còn vì nhiều công ty lớn đang để ý "
-            "tới hướng này.",
-            0.2,
-        )
-        self.say(
+            "tới hướng này. "
             "Điều đó cho thấy câu chuyện về World Model không còn là lý thuyết xa vời nữa. "
-            "Nó đang dần trở thành một hướng rất thực tế cho AI hiện đại.",
-            0.2,
+            "Nó đang dần trở thành một hướng rất thực tế cho AI hiện đại."
         )
         self.clear_scene()
 
-        self.show_world_model_definition()
-        self.say(
+        self.show_world_model_definition(
             "Vậy World Model là gì? Hiểu ngắn gọn, đây là mô hình học cách dự đoán trạng thái "
-            "tiếp theo của môi trường khi ta đưa vào một hành động.",
-            0.2,
-        )
-        self.say(
+            "tiếp theo của môi trường khi ta đưa vào một hành động. "
             "Thay vì chỉ nhìn vào dữ liệu tĩnh, nó học được quy luật chuyển động của thế giới: "
-            "điều gì có thể xảy ra tiếp theo, và kết quả có thể trông như thế nào.",
-            0.2,
+            "điều gì có thể xảy ra tiếp theo, và kết quả có thể trông như thế nào."
         )
         self.clear_scene()
 
-        self.show_agent_definition()
-        self.say(
+        self.show_agent_definition(
             "Còn agent là gì? Agent là thực thể ra quyết định. Nó quan sát môi trường, "
-            "chọn hành động, rồi nhận phản hồi để học cách làm tốt hơn ở lần sau.",
-            0.2,
-        )
-        self.say(
+            "chọn hành động, rồi nhận phản hồi để học cách làm tốt hơn ở lần sau. "
             "Nếu World Model là thứ mô phỏng thế giới, thì agent là thứ đang sống trong mô phỏng đó "
-            "để thử, sai, và cải thiện chiến lược của mình.",
-            0.2,
+            "để thử, sai, và cải thiện chiến lược của mình."
         )
         self.clear_scene()
 
-        self.show_interaction_loop()
-        self.say(
+        self.show_interaction_loop(
             "Khi ghép agent với World Model, ta có thể sinh ra rất nhiều kịch bản mô phỏng. "
             "Đây là điểm rất quan trọng, vì agent có thể luyện tập trong vô số tình huống "
-            "mà ngoài đời thật có thể khó hoặc tốn kém để tạo ra.",
-            0.2,
-        )
-        self.say(
+            "mà ngoài đời thật có thể khó hoặc tốn kém để tạo ra. "
             "Tóm lại, World Model giúp tạo ra một phòng thí nghiệm cho agent. "
-            "Còn agent là người học trong phòng thí nghiệm đó để tiến bộ nhanh hơn và tổng quát tốt hơn.",
-            0.2,
+            "Còn agent là người học trong phòng thí nghiệm đó để tiến bộ nhanh hơn và tổng quát tốt hơn."
         )
         self.wait(1.2)
 
-    def show_intro_image(self):
+    def show_intro_image(self, text: str = ""):
         title = Text("AI có thể tưởng tượng?", font=self.FONT)
         title.to_edge(UP)
         img = ImageMobject(self.asset_path("1-people-imagination.png"))
-        self.play(FadeIn(img), Write(title))
+        if text:
+            self.say_and_play(text, FadeIn(img), Write(title))
+        else:
+            self.play(FadeIn(img), Write(title))
 
-    def show_paper_context(self):
+    def show_paper_context(self, text: str = ""):
         caption = Text(
             "Một bài báo nghiên cứu về các tạo thế giới giả lập cho AI tương tác",
             font=self.FONT,
@@ -123,9 +108,12 @@ class WhatIsWorldModelScene(VoiceoverScene):
         paper.scale(0.8).to_edge(RIGHT)
         website.scale(0.5).to_edge(LEFT)
 
-        self.play(Write(caption), FadeIn(paper), FadeIn(website))
+        if text:
+            self.say_and_play(text, Write(caption), FadeIn(paper), FadeIn(website))
+        else:
+            self.play(Write(caption), FadeIn(paper), FadeIn(website))
 
-    def show_world_model_definition(self):
+    def show_world_model_definition(self, text: str = ""):
         title = Text("World model là gì?", font=self.FONT, weight=BOLD).scale(0.8)
         title.to_edge(UP)
 
@@ -163,13 +151,23 @@ class WhatIsWorldModelScene(VoiceoverScene):
         takeaway.set_color(YELLOW_B)
         takeaway.to_edge(DOWN)
 
-        self.play(FadeIn(title, shift=UP * 0.2))
-        self.play(FadeIn(real_world), Write(real_label), Write(real_desc))
-        self.play(GrowArrow(arrow), FadeIn(arrow_text, shift=UP * 0.1))
-        self.play(FadeIn(model_box), Write(model_label), Write(model_desc))
-        self.play(Write(takeaway))
+        if text:
+            self.say_and_play(
+                text,
+                FadeIn(title, shift=UP * 0.2),
+                FadeIn(real_world), Write(real_label), Write(real_desc),
+                GrowArrow(arrow), FadeIn(arrow_text, shift=UP * 0.1),
+                FadeIn(model_box), Write(model_label), Write(model_desc),
+                Write(takeaway)
+            )
+        else:
+            self.play(FadeIn(title, shift=UP * 0.2))
+            self.play(FadeIn(real_world), Write(real_label), Write(real_desc))
+            self.play(GrowArrow(arrow), FadeIn(arrow_text, shift=UP * 0.1))
+            self.play(FadeIn(model_box), Write(model_label), Write(model_desc))
+            self.play(Write(takeaway))
 
-    def show_agent_definition(self):
+    def show_agent_definition(self, text: str = ""):
         title = Text("Agent là gì?", font="Segoe UI", weight=BOLD).scale(0.8)
         title.to_edge(UP)
 
@@ -207,14 +205,25 @@ class WhatIsWorldModelScene(VoiceoverScene):
         goal.set_color(YELLOW_B)
         goal.to_edge(DOWN)
 
-        self.play(FadeIn(title, shift=UP * 0.2))
-        self.play(FadeIn(agent_body), Write(agent_label))
-        self.play(FadeIn(env), Write(env_label))
-        self.play(GrowArrow(action_arrow), FadeIn(action_text, shift=UP * 0.1))
-        self.play(GrowArrow(obs_arrow), FadeIn(obs_text, shift=DOWN * 0.1))
-        self.play(Write(goal))
+        if text:
+            self.say_and_play(
+                text,
+                FadeIn(title, shift=UP * 0.2),
+                FadeIn(agent_body), Write(agent_label),
+                FadeIn(env), Write(env_label),
+                GrowArrow(action_arrow), FadeIn(action_text, shift=UP * 0.1),
+                GrowArrow(obs_arrow), FadeIn(obs_text, shift=DOWN * 0.1),
+                Write(goal)
+            )
+        else:
+            self.play(FadeIn(title, shift=UP * 0.2))
+            self.play(FadeIn(agent_body), Write(agent_label))
+            self.play(FadeIn(env), Write(env_label))
+            self.play(GrowArrow(action_arrow), FadeIn(action_text, shift=UP * 0.1))
+            self.play(GrowArrow(obs_arrow), FadeIn(obs_text, shift=DOWN * 0.1))
+            self.play(Write(goal))
 
-    def show_interaction_loop(self):
+    def show_interaction_loop(self, text: str = ""):
         title = Text("Khi ghép Agent với World model", font="Segoe UI", weight=BOLD).scale(0.74)
         title.to_edge(UP)
 
@@ -257,4 +266,7 @@ class WhatIsWorldModelScene(VoiceoverScene):
             for point in waypoints:
                 self.play(agent.animate.move_to(point), run_time=0.32)
 
-        self.play(Write(loop_text), run_time=5)
+        if text:
+            self.say_and_play(text, Write(loop_text))
+        else:
+            self.play(Write(loop_text), run_time=5)
